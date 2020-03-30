@@ -1,3 +1,3 @@
 # quectel-l86-example
 
-Basic example which demonstrates how the quesctel-l86 driver
+Basic example which demonstrates how to use the quectel-l86 driver
