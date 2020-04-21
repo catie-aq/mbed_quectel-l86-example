@@ -2,16 +2,16 @@
  * Copyright (c) 2017-2020, CATIE
  * SPDX-License-Identifier: Apache-2.0
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 #include "mbed.h"
@@ -32,24 +32,36 @@ L86 l86(&uart);
 
 int main()
 {
-	SatelliteSystems satellite_systems;
-	satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GPS)] = true;
-	satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GLONASS)] = true;
-	l86.set_satellite_system(satellite_systems);
+    L86::SatelliteSystems satellite_systems;
+    satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GPS)] = true;
+    satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GLONASS)] = true;
+    l86.set_satellite_system(satellite_systems);
 
-	NmeaCommands nmea_commands;
-	nmea_commands[static_cast<size_t>(L86::NmeaCommandType::RMC)] = true;
-	nmea_commands[static_cast<size_t>(L86::NmeaCommandType::VTG)] = true;
-	l86.set_nmea_output_frequency(nmea_commands, L86::NmeaFrequency::TWO_POSITION_FIXES);
+    L86::NmeaCommands nmea_commands;
+    nmea_commands[static_cast<size_t>(L86::NmeaCommandType::RMC)] = true;
+    nmea_commands[static_cast<size_t>(L86::NmeaCommandType::GGA)] = true;
+    l86.set_nmea_output_frequency(nmea_commands, L86::NmeaFrequency::TWO_POSITION_FIXES);
 
-	l86.set_navigation_mode(L86::NavigationMode::NORMAL_MODE);
-	l86.set_position_fix_interval(10000);
-	l86.start(L86::StartMode::FULL_COLD_START);
+    l86.set_navigation_mode(L86::NavigationMode::NORMAL_MODE);
+    l86.set_position_fix_interval(10000);
+    l86.start(L86::StartMode::WARM_START);
 
-	while (true) {
-		led1 != led1;
-		swo.printf("Latitude : %s\n", l86.get_latitude());
-		swo.printf("Longitude : %s\n\n", l86.get_longitude());
-		ThisThread::sleep_for(250);
-	}
+    swo.printf("GPS fixing ...");
+    /* Wait that gnss module fixes the communication with satellites */
+    while (!l86.fix_status()) {
+        swo.printf(".");
+        ThisThread::sleep_for(500);
+    }
+    swo.printf("Success\n");
+    ThisThread::sleep_for(250);
+
+
+    while (1) {
+        led1 != led1;
+        swo.printf("\nLast frame time : %s\n", l86.time());
+        swo.printf("Latitude : %s\n", l86.latitude());
+        swo.printf("Longitude : %s\n", l86.longitude());
+        swo.printf("Vitesse : %.2f knots\n", l86.speed(L86::SpeedUnit::KNOTS));
+        ThisThread::sleep_for(50);
+    }
 }
