@@ -17,8 +17,6 @@
 #include "mbed.h"
 #include "l86.h"
 
-using namespace sixtron;
-
 namespace {
 #define PERIOD_MS 1000
 }
