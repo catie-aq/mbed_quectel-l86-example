@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include "mbed.h"
-#include "swo.h"
 #include "l86.h"
 
 using namespace sixtron;
@@ -25,7 +24,6 @@ namespace {
 }
 
 DigitalOut led1(LED1);
-SWO swo;
 RawSerial uart(UART1_TX, UART1_RX, 9600);
 char buf[100];
 L86 l86(&uart);
@@ -45,21 +43,21 @@ int main()
     l86.set_position_fix_interval(10000);
     l86.start(L86::StartMode::HOT_START);
 
-    swo.printf("GPS fixing ...");
+    printf("GPS fixing...");
     /* Wait that gnss module fixes the communication with satellites */
     while (l86.positionning_mode() == L86::PositionningMode::NO_FIX || l86.positionning_mode() == L86::PositionningMode::UNKNOWN) {
-        swo.printf(".");
+        printf(".");
         ThisThread::sleep_for(500);
     }
-    swo.printf("Success\n");
+    printf("Success\n");
 
     while (1) {
         ThisThread::sleep_for(50);
         led1 != led1;
         time_t current_time = l86.time();
-        swo.printf("\nCurrent time : %s\n", asctime(gmtime(&current_time)));
-        swo.printf("Latitude : %f\n", l86.latitude());
-        swo.printf("Longitude : %f\n", l86.longitude());
-        swo.printf("Speed : %.2f knots\n", l86.speed(L86::SpeedUnit::KNOTS));
+        printf("\nCurrent time: %s\n", asctime(gmtime(&current_time)));
+        printf("Latitude: %f\n", l86.latitude());
+        printf("Longitude: %f\n", l86.longitude());
+        printf("Speed: %.2f km/h\n", l86.speed(L86::SpeedUnit::KMH));
     }
 }
