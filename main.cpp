@@ -56,9 +56,10 @@ int main()
     while (1) {
         ThisThread::sleep_for(50);
         led1 != led1;
-        swo.printf("\nLast frame time : %s\n", l86.time());
-        swo.printf("Latitude : %s\n", l86.latitude());
-        swo.printf("Longitude : %s\n", l86.longitude());
+        time_t current_time = l86.time();
+        swo.printf("\nCurrent time : %s\n", asctime(gmtime(&current_time)));
+        swo.printf("Latitude : %f\n", l86.latitude());
+        swo.printf("Longitude : %f\n", l86.longitude());
         swo.printf("Speed : %.2f knots\n", l86.speed(L86::SpeedUnit::KNOTS));
     }
 }
