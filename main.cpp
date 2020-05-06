@@ -53,15 +53,13 @@ int main()
         ThisThread::sleep_for(500);
     }
     swo.printf("Success\n");
-    ThisThread::sleep_for(250);
-
 
     while (1) {
+    	ThisThread::sleep_for(50);
         led1 != led1;
         swo.printf("\nLast frame time : %s\n", l86.time());
         swo.printf("Latitude : %s\n", l86.latitude());
         swo.printf("Longitude : %s\n", l86.longitude());
-        swo.printf("Vitesse : %.2f knots\n", l86.speed(L86::SpeedUnit::KNOTS));
-        ThisThread::sleep_for(50);
+        swo.printf("Speed : %.2f knots\n", l86.speed(L86::SpeedUnit::KNOTS));
     }
 }
