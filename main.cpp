@@ -53,9 +53,9 @@ int main()
         ThisThread::sleep_for(PERIOD_MS);
         led1 = !led1;
         time_t current_time = l86.time();
-        printf("Time : %s\n", asctime(gmtime(&current_time)));
-        printf("Latitude : %f\n", l86.latitude());
-        printf("Longitude : %f\n", l86.longitude());
-        printf("Speed : %f\n", l86.speed());
+        printf("Time: %s\n", asctime(gmtime(&current_time)));
+        printf("Latitude: %f\n", l86.latitude());
+        printf("Longitude: %f\n", l86.longitude());
+        printf("Speed: %f\n", l86.speed());
     }
 }
