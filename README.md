@@ -1,4 +1,5 @@
-# Quectel-L86 example
+# Quectel L86 example
+Quectel L86 GNSS module mbed OS driver usage example.
 
 The program applies default configuration to the GNSS module and continuously prints time, longitude, latitude and speed values.
 
