@@ -1,6 +1,6 @@
 # Quectel-L86 example
 
-Basic example which demonstrates how to use the quectel-l86 driver. The program apply default configuration to the gnss module and continuisly prints time, longitude, latitude values.
+The program applies default configuration to the GNSS module and continuously prints time, longitude, latitude and speed values.
 
 ## Usage
 
