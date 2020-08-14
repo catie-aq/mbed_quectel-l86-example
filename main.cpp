@@ -18,12 +18,11 @@
 #include "l86.h"
 
 namespace {
-#define PERIOD_MS 1000
+#define PERIOD_MS 250
 }
 
 DigitalOut led1(LED1);
-RawSerial uart(UART1_TX, UART1_RX, 9600);
-char buf[100];
+BufferedSerial uart(UART1_TX, UART1_RX, 9600);
 L86 l86(&uart);
 
 int main()
@@ -31,31 +30,32 @@ int main()
     L86::SatelliteSystems satellite_systems;
     satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GPS)] = true;
     satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GLONASS)] = true;
-    l86.set_satellite_system(satellite_systems);
+    if (l86.set_satellite_system(satellite_systems)) {
+        printf("Satellite Systems OK \n");
+    }
 
     L86::NmeaCommands nmea_commands;
     nmea_commands[static_cast<size_t>(L86::NmeaCommandType::RMC)] = true;
-    l86.set_nmea_output_frequency(nmea_commands, L86::NmeaFrequency::ONE_POSITION_FIX);
-
-    l86.set_navigation_mode(L86::NavigationMode::NORMAL_MODE);
-    l86.set_position_fix_interval(10000);
-    l86.start(L86::StartMode::HOT_START);
-
-    printf("GPS fixing...");
-    /* Wait that gnss module fixes the communication with satellites */
-    while (l86.positionning_mode() == L86::PositionningMode::NO_FIX || l86.positionning_mode() == L86::PositionningMode::UNKNOWN) {
-        printf(".");
-        ThisThread::sleep_for(500);
+    if (l86.set_nmea_output_frequency(nmea_commands, L86::NmeaFrequency::ONE_POSITION_FIX)) {
+        printf("Nmea output frequency OK\n");
     }
-    printf("Success\n");
+    if (l86.set_navigation_mode(L86::NavigationMode::NORMAL_MODE)) {
+        printf("Navigation mode OK\n");
+    }
+    if (l86.set_position_fix_interval(1000)) {
+        printf("Position fix interval OK\n");
+    }
+    if (l86.start(L86::StartMode::HOT_START)) {
+        printf("Start Ok\n");
+    }
 
     while (1) {
-        ThisThread::sleep_for(50);
-        led1 != led1;
+        ThisThread::sleep_for(PERIOD_MS);
+        led1 = !led1;
         time_t current_time = l86.time();
-        printf("\nCurrent time: %s\n", asctime(gmtime(&current_time)));
+        printf("Time: %s\n", asctime(gmtime(&current_time)));
         printf("Latitude: %f\n", l86.latitude());
         printf("Longitude: %f\n", l86.longitude());
-        printf("Speed: %.2f km/h\n", l86.speed(L86::SpeedUnit::KMH));
+        printf("Speed: %f\n", l86.speed());
     }
 }
