@@ -18,15 +18,35 @@
 #include "l86.h"
 
 namespace {
-#define PERIOD_MS 250
+#define PERIOD 5s
+#define BLINK_DURATION 500ms // Blink every 1s
+#define LED_BRIGHTNESS 0.1 // Use PWM output to drive LED
 }
 
-DigitalOut led1(LED1);
+// Status
+static PwmOut led1(LED1);
+static EventQueue led_queue(32 * EVENTS_EVENT_SIZE);
+static Thread led_thread;
+
+// GNSS
 BufferedSerial uart(UART1_TX, UART1_RX, 9600);
 L86 l86(&uart);
 
+void blink()
+{
+    if (led1 != 0) {
+        led1 = 0;
+    } else {
+        led1 = LED_BRIGHTNESS;
+    }
+}
+
 int main()
 {
+    // Blink LED forever
+    led_queue.call_every(BLINK_DURATION, blink);
+    led_thread.start(callback(&led_queue, &EventQueue::dispatch_forever));
+
     L86::SatelliteSystems satellite_systems;
     satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GPS)] = true;
     satellite_systems[static_cast<size_t>(L86::SatelliteSystem::GLONASS)] = true;
@@ -50,10 +70,9 @@ int main()
     }
 
     while (1) {
-        ThisThread::sleep_for(PERIOD_MS);
-        led1 = !led1;
+        ThisThread::sleep_for(PERIOD);
         time_t current_time = l86.time();
-        printf("Time: %s\n", asctime(gmtime(&current_time)));
+        printf("Time: %s", asctime(gmtime(&current_time)));
         printf("Latitude: %f\n", l86.latitude());
         printf("Longitude: %f\n", l86.longitude());
         printf("Speed: %f\n", l86.speed());
