@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "l86.h"
 
 #include "mbed.h"
+
+#include "l86.h"
 
 namespace {
 #define PERIOD 5s
@@ -71,10 +72,10 @@ int main()
     }
     // Receive messages from the module
     l86.start_receive();
-
+    time_t current_time = l86.time();
     while (1) {
         ThisThread::sleep_for(PERIOD);
-        time_t current_time = l86.time();
+        printf("NMEA Sentence: %s\n", l86.last_nmea_sentence());
         printf("Time: %s", asctime(gmtime(&current_time)));
         printf("Latitude: %f\n", l86.latitude());
         printf("Longitude: %f\n", l86.longitude());
