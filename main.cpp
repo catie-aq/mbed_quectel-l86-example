@@ -16,7 +16,6 @@
  */
 
 #include "mbed.h"
-
 #include "l86.h"
 
 namespace {
@@ -70,9 +69,6 @@ int main()
     if (l86.start(L86::StartMode::HOT_START)) {
         printf("Start Ok\n");
     }
-    // Receive messages from the module
-    l86.start_receive();
-    
     while (1) {
         ThisThread::sleep_for(PERIOD);
         time_t current_time = l86.time();
