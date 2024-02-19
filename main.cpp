@@ -72,10 +72,10 @@ int main()
     }
     // Receive messages from the module
     l86.start_receive();
-    time_t current_time = l86.time();
+    
     while (1) {
         ThisThread::sleep_for(PERIOD);
-        printf("NMEA Sentence: %s\n", l86.last_nmea_sentence());
+        time_t current_time = l86.time();
         printf("Time: %s", asctime(gmtime(&current_time)));
         printf("Latitude: %f\n", l86.latitude());
         printf("Longitude: %f\n", l86.longitude());
