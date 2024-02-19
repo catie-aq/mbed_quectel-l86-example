@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "mbed.h"
+
 #include "l86.h"
 
 namespace {
@@ -29,7 +31,7 @@ static EventQueue led_queue(32 * EVENTS_EVENT_SIZE);
 static Thread led_thread;
 
 // GNSS
-BufferedSerial uart(UART1_TX, UART1_RX, 9600);
+UnbufferedSerial uart(UART1_TX, UART1_RX, 9600);
 L86 l86(&uart);
 
 void blink()
@@ -68,7 +70,9 @@ int main()
     if (l86.start(L86::StartMode::HOT_START)) {
         printf("Start Ok\n");
     }
-
+    // Receive messages from the module
+    l86.start_receive();
+    
     while (1) {
         ThisThread::sleep_for(PERIOD);
         time_t current_time = l86.time();
